@@ -20,13 +20,13 @@ public class CourseService {
 
     public Course saveCourse(Course course) throws PmuException {
         if(courseRepository.isCourseExist(course.getJour(), course.getNombreUnique()))
-            throw new PmuException("Course existe déjà pour aujourd'hui");
+            throw PmuException.builder().message("Course existe déjà pour aujourd'hui").build();
 
         if(!isListPartantOK(course.getPartants())) {
             if(!listHasNexts(course.getPartants()))
-                throw new PmuException("les partants ne sont pas correctement numérotés");
+                throw PmuException.builder().message("les partants ne sont pas correctement numérotés").build();
             if(!isFirstNumberOne(course.getPartants()))
-                throw new PmuException("Aucun partant n'a le numéro 1");
+                throw PmuException.builder().message("Aucun partant n'a le numéro 1").build();
         }
 
         return courseRepository.save(course);

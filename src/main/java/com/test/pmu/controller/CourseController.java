@@ -20,12 +20,13 @@ public class CourseController {
     private final CourseService courseService;
 
     @PostMapping("/add")
-    public ResponseEntity<Course> saveCourse(@RequestBody Course course) {
+    public ResponseEntity<?> saveCourse(@RequestBody Course course) {
         try {
             return new ResponseEntity<>(courseService.saveCourse(course), HttpStatus.CREATED);
         } catch (PmuException e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
+            e.setHttpMessage(HttpStatus.NOT_ACCEPTABLE.toString());
+            return new ResponseEntity<>(e, HttpStatus.NOT_ACCEPTABLE);
         }
     }
 }
