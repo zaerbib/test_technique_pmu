@@ -1,13 +1,19 @@
 package com.test.pmu.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Data
 @Entity
-@Table(name = "partant_t")
+@Table(name = "partanàt_t")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Partant {
 
     @Id
