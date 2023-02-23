@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Data
 @Entity
-@Table(name = "partanàt_t")
+@Table(name = "partant_t")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

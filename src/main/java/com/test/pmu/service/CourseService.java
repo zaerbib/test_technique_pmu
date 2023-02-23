@@ -7,6 +7,7 @@ import com.test.pmu.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
@@ -18,6 +19,9 @@ public class CourseService {
     }
 
     public Course saveCourse(Course course) throws PmuException {
+        if(courseRepository.isCourseExist(course.getJour(), course.getNombreUnique()))
+            throw new PmuException("Course existe déjà pour aujourd'hui");
+
         if(!isListPartantOK(course.getPartants())) {
             if(!listHasNexts(course.getPartants()))
                 throw new PmuException("les partants ne sont pas correctement numérotés");
@@ -37,16 +41,19 @@ public class CourseService {
      * @return
      */
     private boolean isListPartantOK(Set<Partant> partants) {
-       return partants.size() >= 3 && isFirstNumberOne(partants) && listHasNexts(partants);
+       return partants.size() >= 3 && isFirstNumberOne(partants)
+               && listHasNexts(partants);
     }
 
     private boolean listHasNexts(Set<Partant> partants) {
         List<Partant> lists = new ArrayList<>(partants);
-        lists.sort(Comparator.comparing(Partant::getNumber));
-        Partant lastPartant = lists.get(lists.size() - 1);
+        List<Integer> listTmp = lists.stream().map(item -> item.getNumber()).sorted().collect(Collectors.toList());
+        Integer tmp = listTmp.get(listTmp.size() - 1);
 
-        for(Partant partant: lists) {
-            if(partant.equals(lastPartant) && !lists.contains(partant.getNumber() + 1))
+        for(Integer item: listTmp) {
+            if(item == tmp)
+                return true;
+            if(!listTmp.contains(item + 1))
                 return false;
         }
 
@@ -55,6 +62,7 @@ public class CourseService {
 
     private boolean isFirstNumberOne(Set<Partant> partants) {
         List<Partant> tmp = new ArrayList<>(partants);
+        tmp.sort(Comparator.comparing(Partant::getNumber));
         return tmp.get(0).getNumber() == 1;
     }
 }
