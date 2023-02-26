@@ -35,3 +35,4 @@ build/
 kafka_data/
 pgdata/
 zookeeper/
+*.stat
