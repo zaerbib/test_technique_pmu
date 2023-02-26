@@ -2,10 +2,13 @@ package com.test.pmu.service;
 
 import com.test.pmu.entity.Course;
 import com.test.pmu.entity.Partant;
+import com.test.pmu.event.EventCourse;
 import com.test.pmu.exception.PmuException;
 import com.test.pmu.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,18 +21,38 @@ public class CourseService {
         this.courseRepository = courseRepository;
     }
 
+    /**
+     * save course service
+     * @param course
+     * @return
+     * @throws PmuException
+     */
     public Course saveCourse(Course course) throws PmuException {
-        if(courseRepository.isCourseExist(course.getJour(), course.getNombreUnique()))
-            throw PmuException.builder().message("Course existe déjà pour aujourd'hui").build();
-
-        if(!isListPartantOK(course.getPartants())) {
-            if(!listHasNexts(course.getPartants()))
-                throw PmuException.builder().message("les partants ne sont pas correctement numérotés").build();
-            if(!isFirstNumberOne(course.getPartants()))
-                throw PmuException.builder().message("Aucun partant n'a le numéro 1").build();
+        if(courseRepository.isCourseExist(course.getJour(), course.getNombreUnique())) {
+            PmuException exception = PmuException.builder().message("Course existe déjà pour aujourd'hui").build();
+            EventCourse eventCourse = EventCourse.builder().id(UUID.randomUUID().toString())
+                    .date(LocalDate.now()).course(course).exception(exception).build();
+            throw exception;
         }
 
-        return courseRepository.save(course);
+        if(!isListPartantOK(course.getPartants())) {
+            if(!listHasNexts(course.getPartants())) {
+                PmuException exception = PmuException.builder().message("les partants ne sont pas correctement numérotés").build();
+                EventCourse eventCourse = EventCourse.builder().id(UUID.randomUUID().toString())
+                        .date(LocalDate.now()).course(course).exception(exception).build();
+                throw exception;
+            }
+            if(!isFirstNumberOne(course.getPartants())) {
+                PmuException exception = PmuException.builder().message("Aucun partant n'a le numéro 1").build();
+                EventCourse eventCourse = EventCourse.builder().id(UUID.randomUUID().toString())
+                        .date(LocalDate.now()).course(course).exception(exception).build();
+                throw exception;
+            }
+        }
+        Course result = courseRepository.save(course);
+        EventCourse eventCourse = EventCourse.builder().id(UUID.randomUUID().toString())
+                                    .date(LocalDate.now()).course(course).course(result).build();
+        return result;
     }
 
     /**
