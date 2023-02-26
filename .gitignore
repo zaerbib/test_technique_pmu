@@ -1,5 +1,8 @@
 HELP.md
 target/
+kafka_data/
+pgdata/
+zookeeper/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -31,8 +34,4 @@ build/
 
 ### VS Code ###
 .vscode/
-
-kafka_data/
-pgdata/
-zookeeper/
 *.stat
