@@ -11,6 +11,5 @@ Ces événements sont propagés au reste de la SI
 
 * Avant de lancer l'application faire la commande 
          docker-commpose up
-* 
 
 
