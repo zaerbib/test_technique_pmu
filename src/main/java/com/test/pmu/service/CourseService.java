@@ -110,9 +110,13 @@ public class CourseService {
 
     private boolean listHasNexts(Set<Partant> partants) {
         List<Partant> lists = new ArrayList<>(partants);
-        List<Integer> listTmp = lists.stream().map(item -> item.getNumber()).sorted().collect(Collectors.toList());
-        Integer tmp = listTmp.get(listTmp.size() - 1);
+        List<Integer> listTmp = lists.stream().map(Partant::getNumber).sorted().toList();
 
+        if(listTmp.isEmpty()){
+            return false;
+        }
+
+        Integer tmp = listTmp.get(lists.size() - 1);
         for(Integer item: listTmp) {
             if(item == tmp)
                 return true;
